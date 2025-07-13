@@ -16,7 +16,8 @@
     #define FNC 3
     #define SYM2 4
     #define ACCENT 5
-		#define SETTINGS 6
+	#define SETTINGS 6
+	#define GAME 7
 // -----------------
 
 &mt {
@@ -26,6 +27,10 @@
 
 &sk {
     ignore-modifiers;
+};
+
+&soft_off {
+    hold-time-ms = <1000>; // Only turn off it the key is held for 1 seconds or longer.
 };
 
 / {
@@ -50,18 +55,34 @@
             bindings = <&mo ACCENT>;
         };
 				// internal-left & external-right thumb keys
-				combo_sym2 {
-						timeout-ms = <200>;
-						key-positions = <31 33>;
-						bindings = <&mo SYM2>;
-				};
-				// both left thumb keys
-				combo_settings {
-						timeout-ms = <300>;
-						key-positions = <30 31>;
-						bindings = <&mo SETTINGS>;
-				};
+		combo_sym2 {
+				timeout-ms = <200>;
+				key-positions = <31 33>;
+				bindings = <&mo SYM2>;
+		};
+		// both left thumb keys
+		combo_settings {
+				timeout-ms = <300>;
+				key-positions = <30 31>;
+				bindings = <&mo SETTINGS>;
+		};
+		
+		combo_game {
+			timeout-ms = <300>;
+			key-positions = <30 31 32 33>;
+			bindings = <&tog GAME>;
+		};
     };
+
+	behaviors {
+        td0: tap_dance_0 { // Soft Shutdown Keyboard 
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&soft_off>;
+        };
+    };
+	
 
     keymap {
             compatible = "zmk,keymap";
@@ -126,13 +147,23 @@
 		>;
 		};
 
-        // Used to change the keyboard's settings.
+        // Used to change the keyboard's settings and shutdown on Tap Dance
        		settings_layer {
 		bindings = <
-		&bootloader &none &none &bt BT_CLR &bt BT_SEL 0               &bt BT_SEL 3 &none &unstick &none &bootloader 
-		&none &none &none &none      &bt BT_SEL 1 						  &bt BT_SEL 4 &none &none &none &none
-		&none &none &none &none      &bt BT_SEL 2               &bt BT_SEL 5 &none &none &none &none
-          				     &none &none                         &none &none 
+		&bootloader &none &none &bt BT_CLR &bt BT_SEL 0               	&bt BT_SEL 3 &none &unstick &none &bootloader 
+		&none &none &none &none	&bt BT_SEL 1 						&bt BT_SEL 4 &none &none &none &none
+		&td0 &none &none &none	&bt BT_SEL 2               			&bt BT_SEL 5 &none &none &none &studio_unlock
+										&none &none                		&none &none 
+		>;
+		};
+
+		// Used to play WASD Games
+       		game_layer {
+		bindings = <
+		&none &kp Q &kp W &kp E &none	            &none &kp N1 &kp N2 &kp N3 &kp N4
+		&kp LSHIFT &kp A &kp S &kp D &none 			&none &kp N5 &kp N6 &kp N7 &kp N8
+		&kp LCTRL &none &none &none  &none               &none &kp N9 &kp N0 &kp Z &none
+						&none &kp SPACE             &none &none 
 		>;
 		};
         
